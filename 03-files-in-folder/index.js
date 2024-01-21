@@ -11,7 +11,9 @@ fs.readdir(name, (_, files) => {
       if (error) console.log(error);
       else {
         if (fileStats.isDirectory()) return;
-        stdout.write(`${fname} - ${ext} - ${(fileStats.size / 1024).toFixed(3)}kb\n`)
+        stdout.write(
+          `${fname} - ${ext} - ${(fileStats.size / 1024).toFixed(3)}kb\n`,
+        );
       }
     });
   });
