@@ -53,7 +53,9 @@ function copyFolder(isFirstTry = true, newPath = null) {
 
 function buildPage() {
   const projectDist = path.join(__dirname, 'project-dist');
-  fs.mkdir(projectDist, { recursive: true }, (err) => {if (err) throw err;});
+  fs.mkdir(projectDist, { recursive: true }, (err) => {
+    if (err) throw err;
+  });
   const newHtml = path.join(projectDist, 'index.html');
   fs.readFile(path.join(__dirname, 'template.html'), (err, tempData) => {
     if (err) throw err;
@@ -65,7 +67,9 @@ function buildPage() {
         fs.readFile(path.join(__dirname, 'components', file), (err, data) => {
           if (err) throw err;
           innerHTML = innerHTML.replaceAll(regeexp, data.toString());
-          fs.writeFile(newHtml, innerHTML, (err) => {if (err) throw err});
+          fs.writeFile(newHtml, innerHTML, (err) => {
+            if (err) throw err;
+          });
         });
       });
     });
