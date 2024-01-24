@@ -28,6 +28,30 @@ function copyFolder(isFirstTry = true, newPath = null) {
     copy = path.join(copy, foldName);
     origFiles = newPath;
   }
+
+  fs.readdir(copy, (_, copyFiles) => {
+    if (copyFiles === undefined) return;
+    fs.readdir(origFiles, (_, origFiles2) => {
+      if (copyFiles.length > origFiles2.length) {
+        const copyNames = copyFiles.map((item) => path.basename(item));
+        const origNames = origFiles2.map((item) => path.basename(item));
+        for (let i = 0; i < copyNames.length; i += 1) {
+          if (!origNames.includes(copyNames[i])) {
+            fs.stat(path.join(copy, copyFiles[i]), (err, fileStats) => {
+              if (fileStats.isDirectory()) {
+                fs.rmSync(path.join(copy, copyFiles[i]), { recursive: true, force: true });
+              } else {
+                fs.unlink(path.join(copy, copyFiles[i]), (err) => {
+                  if (err) throw err;
+                });
+              }
+            });
+          }
+        }
+      }
+    });
+  });
+  
   fs.mkdir(copy, { recursive: true }, (err) => {
     if (err) throw err;
   });

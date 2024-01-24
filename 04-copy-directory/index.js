@@ -5,6 +5,12 @@ function copyFolder(isFirstTry = true, newPath = null) {
   let foldName, origFiles, copy;
   origFiles = path.join(__dirname, 'files');
   copy = path.join(__dirname, 'files-copy');
+  if (!isFirstTry) {
+    foldName = newPath.replace(origFiles, '').split('\\').slice(1);
+    foldName = foldName.join('\\');
+    copy = path.join(copy, foldName);
+    origFiles = newPath;
+  }
 
   fs.readdir(copy, (_, copyFiles) => {
     if (copyFiles === undefined) return;
@@ -14,8 +20,14 @@ function copyFolder(isFirstTry = true, newPath = null) {
         const origNames = origFiles2.map((item) => path.basename(item));
         for (let i = 0; i < copyNames.length; i += 1) {
           if (!origNames.includes(copyNames[i])) {
-            fs.unlink(path.join(copy, copyFiles[i]), (err) => {
-              if (err) throw err;
+            fs.stat(path.join(copy, copyFiles[i]), (err, fileStats) => {
+              if (fileStats.isDirectory()) {
+                fs.rmSync(path.join(copy, copyFiles[i]), { recursive: true, force: true });
+              } else {
+                fs.unlink(path.join(copy, copyFiles[i]), (err) => {
+                  if (err) throw err;
+                });
+              }
             });
           }
         }
@@ -23,12 +35,6 @@ function copyFolder(isFirstTry = true, newPath = null) {
     });
   });
 
-  if (!isFirstTry) {
-    foldName = newPath.replace(origFiles, '').split('\\').slice(1);
-    foldName = foldName.join('\\');
-    copy = path.join(copy, foldName);
-    origFiles = newPath;
-  }
   fs.mkdir(copy, { recursive: true }, (err) => {
     if (err) console.log(err);
   });
