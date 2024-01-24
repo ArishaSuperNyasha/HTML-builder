@@ -7,10 +7,11 @@ function copyFolder(isFirstTry = true, newPath = null) {
   copy = path.join(__dirname, 'files-copy');
 
   fs.readdir(copy, (_, copyFiles) => {
-    fs.readdir(origFiles, (_, origFiles) => {
-      if (copyFiles.length > origFiles.length) {
+    if (copyFiles === undefined) return;
+    fs.readdir(origFiles, (_, origFiles2) => {
+      if (copyFiles.length > origFiles2.length) {
         const copyNames = copyFiles.map((item) => path.basename(item));
-        const origNames = origFiles.map((item) => path.basename(item));
+        const origNames = origFiles2.map((item) => path.basename(item));
         for (let i = 0; i < copyNames.length; i += 1) {
           if (!origNames.includes(copyNames[i])) {
             fs.unlink(path.join(copy, copyFiles[i]), (err) => {
@@ -21,7 +22,7 @@ function copyFolder(isFirstTry = true, newPath = null) {
       }
     });
   });
-  
+
   if (!isFirstTry) {
     foldName = newPath.replace(origFiles, '').split('\\').slice(1);
     foldName = foldName.join('\\');
