@@ -5,6 +5,23 @@ function copyFolder(isFirstTry = true, newPath = null) {
   let foldName, origFiles, copy;
   origFiles = path.join(__dirname, 'files');
   copy = path.join(__dirname, 'files-copy');
+
+  fs.readdir(copy, (_, copyFiles) => {
+    fs.readdir(origFiles, (_, origFiles) => {
+      if (copyFiles.length > origFiles.length) {
+        const copyNames = copyFiles.map((item) => path.basename(item));
+        const origNames = origFiles.map((item) => path.basename(item));
+        for (let i = 0; i < copyNames.length; i += 1) {
+          if (!origNames.includes(copyNames[i])) {
+            fs.unlink(path.join(copy, copyFiles[i]), (err) => {
+              if (err) throw err;
+            });
+          }
+        }
+      }
+    });
+  });
+  
   if (!isFirstTry) {
     foldName = newPath.replace(origFiles, '').split('\\').slice(1);
     foldName = foldName.join('\\');
